@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MemorisationDeFormes" default="run" basedir=".">
+
+    <description>
+        Ce fichier build.xml compile les fichiers Java de mon projet.
+    </description>
+
+    <property name="src.dir" value="src"/>
+    <property name="test.dir" value="test"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="build.dir" value="build"/>
+    <property name="doc.dir" value="doc"/>
+
+    <path id="classpath">
+        <fileset dir="${dist.dir}">
+            <include name="junit.jar"/>
+        </fileset>
+        <pathelement location="{build.dir}"/>
+    </path>
+
+    <target name="init">
+        <delete dir="${build.dir}" />
+        <mkdir dir="${build.dir}" />
+    </target>
+
+    <target name="compile" depends="init">
+        <javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
+            <classpath refid="classpath"/>
+        </javac>
+        <javac srcdir="${test.dir}" destdir="${build.dir}" includeantruntime="false">
+            <classpath>
+                <pathelement location="{build.dir}"/>
+                <pathelement location="dist/junit.jar"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="run" depends="jar">
+        <java jar="${basedir}/dist/${ant.project.name}.jar" fork="true" />
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${basedir}/dist" />
+        <jar destfile="${dist.dir}//${ant.project.name}.jar" basedir="${build.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="src.Main" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="javadoc" depends="compile">
+        <javadoc destdir="${doc.dir}">
+            <fileset dir="${src.dir}">
+                <include name="**/*.java"/>
+            </fileset>
+        </javadoc>
+    </target>
+
+    <target name="test" depends="compile">
+    <junit fork="yes" printsummary="true">
+      <test name="test.JeuTest"/>
+      <classpath>
+        <pathelement location="${build.dir}"/>
+        <pathelement location="dist/junit.jar"/>
+      </classpath>
+    </junit>
+  </target>
+</project>
